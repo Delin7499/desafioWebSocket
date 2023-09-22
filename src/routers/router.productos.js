@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { Product, ProductManager } from "../ProductManager.mjs";
+import ProductManager from "../dao/DB/ProductManager.js";
 
 const pm = new ProductManager();
 
 const productRouter = Router();
 
-productRouter.get("/", (req, res) => {
-  const productos = pm.getProducts();
+productRouter.get("/", async (req, res) => {
+  const productos = await pm.getProducts();
   if (req.query.limit) {
     return res.send(productos.slice(0, req.query.limit));
   }
@@ -24,6 +24,7 @@ productRouter.get("/:pid", (req, res) => {
 });
 
 productRouter.post(`/`, async (req, res) => {
+  console.log(req.body);
   if (
     req.body.title &&
     req.body.description &&
@@ -46,13 +47,9 @@ productRouter.post(`/`, async (req, res) => {
         thumbnail
       );
       res.status(200).send();
-      req.context.socketServer.emit(`products`, pm.getProducts());
+      req.context.socketServer.emit(`products`, await pm.getProducts());
     } catch (error) {
-      if (error.message === "CODIGO repetido") {
-        res.status(409).send("CODIGO repetido");
-      } else {
-        res.status(400).send();
-      }
+      res.status(400).send(error);
     }
   } else {
     res.status(400).send();
@@ -60,15 +57,13 @@ productRouter.post(`/`, async (req, res) => {
 });
 
 productRouter.delete("/:pid", async (req, res) => {
-  const pid = parseInt(req.params.pid, 10);
-
   try {
-    await pm.deleteProduct(pid);
-    req.context.socketServer.emit(`products`, pm.getProducts());
-
+    await pm.deleteProduct(req.params.pid);
+    req.context.socketServer.emit(`products`, await pm.getProducts());
     res.status(200).send();
   } catch (error) {
-    res.status(500).send("Error");
+    console.log(error);
+    res.status(500).send(error);
   }
 });
 

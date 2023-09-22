@@ -1,57 +1,25 @@
 import { Router } from "express";
-import fs from "fs";
+import CartManager from "../dao/DB/cartManager.js";
 
-const carritosPath = "./src/carritos.json";
-
+const cm = new CartManager();
 const cartRouter = Router();
 
-const getHighestId = (products) => {
-  let highestId = 0;
-  for (const product of products) {
-    if (product.id > highestId) {
-      highestId = product.id;
-    }
-  }
-  return highestId;
-};
-
-async function getCartsFromFile() {
-  try {
-    const data = await fs.promises.readFile(carritosPath, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    return [];
-  }
-}
-
-async function saveCartsToFile(carts) {
-  await fs.promises.writeFile(carritosPath, JSON.stringify(carts, null, "\t"));
-}
+cartRouter.get("/", async (req, res) => res.send(await cm.getCarts()));
 
 cartRouter.post("/", async (req, res) => {
   try {
-    const carts = await getCartsFromFile();
-    const newId = getHighestId(carts) + 1;
-    const newCart = {
-      id: newId,
-      products: [],
-    };
-
-    carts.push(newCart);
-    await saveCartsToFile(carts);
-
-    res.status(201).json(newCart);
+    await cm.addCart();
+    req.context.socketServer.emit(`carts`, await cm.getCarts());
+    res.status(200).json();
   } catch (error) {
     res.status(500).send("Error");
   }
 });
 
 cartRouter.get("/:cid", async (req, res) => {
-  const cartId = parseInt(req.params.cid, 10);
-
   try {
-    const carts = await getCartsFromFile();
-    const cart = carts.find((cart) => cart.id === cartId);
+    const carts = await cm.getCarts();
+    const cart = carts.find((cart) => cart.id === req.params.cid);
     if (cart) {
       res.status(200).json(cart.products);
     } else {
@@ -63,30 +31,12 @@ cartRouter.get("/:cid", async (req, res) => {
 });
 
 cartRouter.post("/:cid/product/:pid", async (req, res) => {
-  const cartId = parseInt(req.params.cid, 10);
-  const productId = parseInt(req.params.pid, 10);
+  const cartId = req.params.cid;
+  const productId = req.params.pid;
 
   try {
-    const carts = await getCartsFromFile();
-    const cart = carts.find((cart) => cart.id === cartId);
-
-    if (!cart) {
-      res.status(404).send("Not found");
-      return;
-    }
-
-    const p = cart.products.find((product) => product.product === productId);
-
-    if (p) {
-      p.quantity++;
-    } else {
-      cart.products.push({
-        product: productId,
-        quantity: 1,
-      });
-    }
-
-    await saveCartsToFile(carts);
+    await cm.addToCart(cartId, productId);
+    req.context.socketServer.emit(`carts`, await cm.getCarts());
     res.status(200).send("Product added to cart");
   } catch (error) {
     res.status(500).send("Internal Server Error");

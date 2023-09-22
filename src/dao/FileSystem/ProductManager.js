@@ -30,7 +30,7 @@ class ProductManager {
   myPath;
 
   constructor() {
-    this.myPath = path.normalize(`./src/productos.json`);
+    this.myPath = path.normalize(`./src/dao/FileSystem/productos.json`);
     this.idCount = 0;
   }
 

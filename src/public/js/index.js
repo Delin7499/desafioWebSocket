@@ -6,7 +6,7 @@ socket.on("products", (productos) => {
   const productoslist = productos.map(
     (prod) => `<li>
       <h2>${prod.title}</h2>
-      <p>Id: ${prod.id}</p>
+      <p>Id: ${prod._id}</p>
       <p>Description: ${prod.description}</p>
       <p>Code: ${prod.code}</p>
       <p>Price: ${prod.price}</p>
@@ -24,7 +24,7 @@ socket.on("products_update", (productos) => {
   const productoslist = productos.map(
     (prod) => `<li>
       <h2>${prod.title}</h2>
-      <p>Id: ${prod.id}</p>
+      <p>Id: ${prod._id}</p>
       <p>Description: ${prod.description}</p>
       <p>Code: ${prod.code}</p>
       <p>Price: ${prod.price}</p>
@@ -49,7 +49,7 @@ form.addEventListener("submit", function (event) {
     description: document.querySelector("#description").value,
     code: document.querySelector("#code").value,
     price: parseFloat(document.querySelector("#price").value),
-    status: document.querySelector("#status").value,
+    status: document.querySelector("#status").checked,
     stock: parseInt(document.querySelector("#stock").value),
     category: document.querySelector("#category").value,
     thumbnail: document.querySelector("#thumbnail").value,
