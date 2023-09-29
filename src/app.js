@@ -1,9 +1,10 @@
 import express from "express";
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
-import ProductManager from "./dao/DB/ProductManager.js";
+import ProductManager from "./dao/DB/productManager.js";
 import MessageManager from "./dao/DB/MessageManager.js";
 import productRouter from "./routers/router.productos.js";
+import { carritosModel } from "./dao/models/carts.model.js";
 import cartsRouter from "./routers/router.carts.js";
 import viewsRouter from "./routers/viewsRouter.js";
 import mongoose from "mongoose";
@@ -38,12 +39,25 @@ socketServer.on(`connection`, async (socket) => {
   console.log(`Se conecto el usuario con id: ${socket.id}`);
 
   socket.emit(`products`, await pm.getProducts());
-  socket.emit(`nuevo_mensaje`, await await mm.getMessages());
+  socket.emit("categories", await pm.getCategories());
+  socket.emit(`nuevo_mensaje`, await mm.getMessages());
   socket.emit("carts", await cm.getCarts());
+
+  socket.on("cartId", async (cartId) => {
+    const cart = await carritosModel.findOne({ _id: cartId });
+    console.log(cart);
+    socket.emit("cart", cart);
+  });
 
   socket.on(`mensaje`, async (data) => {
     mm.addMessage(data);
     const messages = await mm.getMessages();
     socketServer.emit("nuevo_mensaje", messages);
   });
+});
+
+socketServer.on("cartId", async (cartId) => {
+  const cart = await carritosModel.findOne({ _id: cartId });
+  console.log(cart);
+  socket.emit("cart", cart);
 });

@@ -1,4 +1,5 @@
 import { productosModel } from "../models/productos.model.js";
+import { categoriasModel } from "../models/categories.model.js";
 
 class ProductManager {
   async addProduct(
@@ -34,6 +35,16 @@ class ProductManager {
     productosModel.deleteOne({ _id: id }).catch(function (error) {
       console.log(error); // Failure
     });
+  }
+
+  async newCategory(categoryName) {
+    const categoria = await categoriasModel.create({ name: categoryName });
+    return categoria;
+  }
+
+  async getCategories() {
+    const categorias = categoriasModel.find();
+    return categorias;
   }
 }
 

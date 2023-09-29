@@ -1,16 +1,12 @@
-<h1>Product List</h1>
-<ul>
-  {{#each products}}
-    <li>
-      <h2>{{title}}</h2>
-      <p>Id: {{id}}</p>
-      <p>Description: {{description}}</p>
-      <p>Code: {{code}}</p>
-      <p>Price: {{price}}</p>
-      <p>Status: {{status}}</p>
-      <p>Stock: {{stock}}</p>
-      <p>Category: {{category}}</p>
-      <img src="{{thumbnail}}" alt="{{title}} Image" />
-    </li>
-  {{/each}}
-</ul>
+<div class="container">
+  <select id="cartSelect"></select>
+  <button id="cartButton">Go to cart</button>
+  <button id="newCartButtom">Add Cart</button>
+
+  <h1>Product List</h1>
+  <div id="products" class="product-grid">
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/store.js"></script>

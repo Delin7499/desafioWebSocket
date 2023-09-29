@@ -1,18 +1,24 @@
 import { Router } from "express";
 import { ProductManager } from "../dao/FileSystem/ProductManager.js";
+import { carritosModel } from "../dao/models/carts.model.js";
 
 const pm = new ProductManager();
 const products = pm.getProducts();
-const realTimeProductsRouter = Router();
+const viewsRouter = Router();
 
-realTimeProductsRouter.get(`/`, (req, res) => res.render("home", { products }));
-realTimeProductsRouter.get(`/realtimeproducts`, (req, res) =>
+viewsRouter.get(`/products`, (req, res) => res.render("home", {}));
+viewsRouter.get("/carts/:cid", (req, res) => {
+  const cartId = req.params.cid;
+  res.render("cart", { cartId });
+});
+
+viewsRouter.get(`/realtimeproducts`, (req, res) =>
   res.render("realTimeProducts", {})
 );
-realTimeProductsRouter.get(`/realtimecarts`, (req, res) =>
+viewsRouter.get(`/realtimecarts`, (req, res) =>
   res.render(`realTimeCarts`, {})
 );
 
-realTimeProductsRouter.get("/chat", (req, res) => res.render("chat", {}));
+viewsRouter.get("/chat", (req, res) => res.render("chat", {}));
 
-export default realTimeProductsRouter;
+export default viewsRouter;

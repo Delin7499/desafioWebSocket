@@ -45,6 +45,8 @@ form.addEventListener("submit", function (event) {
 const formcarrito = document.querySelector("#cartForm");
 
 form.addEventListener("submit", function (event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+
   fetch(`/api/carts/`, {
     method: "POST",
     headers: {
