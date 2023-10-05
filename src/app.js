@@ -7,12 +7,28 @@ import productRouter from "./routers/router.productos.js";
 import { carritosModel } from "./dao/models/carts.model.js";
 import cartsRouter from "./routers/router.carts.js";
 import viewsRouter from "./routers/viewsRouter.js";
+import userRouter from "./routers/userRouter.js";
 import mongoose from "mongoose";
 import CartManager from "./dao/DB/cartManager.js";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 const mm = new MessageManager();
 const pm = new ProductManager();
 const cm = new CartManager();
 const app = express();
+app.use(
+  session({
+    store: MongoStore.create({
+      mongoUrl: `mongodb+srv://matimbarcelo:XGl7s3cj2FYYoa64@cluster0.l5ohzsm.mongodb.net/?retryWrites=true&w=majority`,
+      ttl: 100,
+    }),
+    secret: "coderSectret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(cookieParser("CoderSecurity"));
 app.use((req, res, next) => {
   req.context = { socketServer };
   next();
@@ -26,9 +42,11 @@ const socketServer = new Server(httpServer);
 app.engine("handlebars", handlebars.engine());
 app.set("views", `./src/views`);
 app.set("view engine", "handlebars");
+
 app.use(express.static(`./src/public`));
 app.use(`/api/products`, productRouter);
 app.use(`/api/carts`, cartsRouter);
+app.use("/api/users", userRouter);
 app.use(`/`, viewsRouter);
 
 mongoose.connect(
@@ -45,6 +63,7 @@ socketServer.on(`connection`, async (socket) => {
 
   socket.on("cartId", async (cartId) => {
     const cart = await carritosModel.findOne({ _id: cartId });
+    ``;
     console.log(cart);
     socket.emit("cart", cart);
   });

@@ -1,12 +1,14 @@
-<div class="container">
-  <select id="cartSelect"></select>
-  <button id="cartButton">Go to cart</button>
-  <button id="newCartButtom">Add Cart</button>
+ {{>header}}
 
-  <h1>Product List</h1>
-  <div id="products" class="product-grid">
-  </div>
-</div>
+    <div class="container">
+        <select id="cartSelect"></select>
+        <button id="cartButton" class="btn btn-primary">Go to Cart</button>
+        <button id="newCartButton" class="btn btn-success">Add Cart</button>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/store.js"></script>
+        <h1>Product List</h1>
+        <div id="products" class="product-grid">
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/store.js"></script>

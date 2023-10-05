@@ -144,3 +144,22 @@ input[type="checkbox"] {
   cursor: pointer;
   font-size: 16px;
 }
+nav {
+  position: absolute; /* Position it relative to the nearest positioned ancestor */
+  top: 10px; /* Adjust the top distance as needed */
+  right: 10px; /* Adjust the right distance as needed */
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+nav li {
+  display: inline; /* Display list items horizontally */
+  margin-right: 10px; /* Add spacing between menu items */
+}
+
+nav a {
+  text-decoration: none;
+}

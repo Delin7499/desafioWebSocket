@@ -11,6 +11,7 @@ const carritosSchema = new mongoose.Schema({
         product: { type: mongoose.Schema.Types.ObjectId, ref: "productos" },
       },
     ],
+    default: [],
   },
 });
 
