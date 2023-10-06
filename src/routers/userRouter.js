@@ -33,6 +33,15 @@ userRouter.post("/signup", async (req, res) => {
 userRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
+  if (email === "adminCoder@coder.com" || password === "adminCod3r123") {
+    req.session.first_name = "admin";
+    req.session.last_name = "admin";
+    req.session.email = email;
+    req.session.age = 0;
+    req.session.isLogged = true;
+    req.session.role = "admin";
+    return res.redirect("/products");
+  }
   const user = await userModel.findOne({ email, password });
 
   if (!user) {
