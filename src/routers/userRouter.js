@@ -1,61 +1,35 @@
 import { Router } from "express";
 import { userModel } from "../dao/models/user.model.js";
+import bcrypt from "bcrypt";
+import passport from "passport";
 
 const userRouter = Router();
 
-userRouter.post("/signup", async (req, res) => {
-  const { first_name, last_name, email, age, password } = req.body;
-
-  const userExists = await userModel.findOne({ email });
-
-  if (userExists) {
-    return res.send("Already registered");
+userRouter.post(
+  "/signup",
+  passport.authenticate("register", { failureRedirect: "/failregister" }),
+  async (req, res) => {
+    res.redirect("/login");
   }
+);
 
-  const user = userModel.create({
-    first_name,
-    last_name,
-    email,
-    age,
-    password,
-  });
+userRouter.post(
+  "/login",
+  passport.authenticate("login", { failureRedirect: "/failogin" }),
+  async (req, res) => {
+    if (!req.user) {
+      res.status(400).send();
+    }
 
-  req.session.first_name = first_name;
-  req.session.last_name = last_name;
-  req.session.email = email;
-  req.session.age = age;
-  req.session.isLogged = true;
-  req.session.role = user.role;
-
-  res.redirect("/products");
-});
-
-userRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  if (email === "adminCoder@coder.com" || password === "adminCod3r123") {
-    req.session.first_name = "admin";
-    req.session.last_name = "admin";
-    req.session.email = email;
-    req.session.age = 0;
+    req.session.first_name = req.user.first_name;
+    req.session.last_name = req.user.last_name;
+    req.session.email = req.user.email;
+    req.session.age = req.user.age;
     req.session.isLogged = true;
-    req.session.role = "admin";
-    return res.redirect("/products");
-  }
-  const user = await userModel.findOne({ email, password });
 
-  if (!user) {
-    return res.send("Tus credenciales son incorrectas");
+    res.redirect("/products");
   }
-  req.session.first_name = user.first_name;
-  req.session.last_name = user.last_name;
-  req.session.email = user.email;
-  req.session.age = user.age;
-  req.session.isLogged = true;
-  req.session.role = user.role;
-
-  res.redirect("/products");
-});
+);
 
 userRouter.get("/logout", (req, res) => {
   req.session.isLogged = false;
@@ -67,4 +41,24 @@ userRouter.get("/logout", (req, res) => {
 
   res.redirect("/login");
 });
+
+userRouter.get(
+  "/github",
+  passport.authenticate("github", { scope: ["user:email"] })
+);
+
+userRouter.get(
+  "/githubcallback",
+  passport.authenticate("github", { failureRedirect: "/login" }),
+  (req, res) => {
+    req.session.first_name = req.user.first_name;
+    req.session.last_name = req.user.last_name;
+    req.session.email = req.user.email;
+    req.session.age = req.user.age;
+    req.session.isLogged = true;
+
+    console.log(res);
+    res.redirect("/products");
+  }
+);
 export default userRouter;
