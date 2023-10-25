@@ -26,7 +26,8 @@ userRouter.post(
     req.session.email = req.user.email;
     req.session.age = req.user.age;
     req.session.isLogged = true;
-
+    req.session.role = req.user.role;
+    req.session.userCart = req.user.cart._id;
     res.redirect("/products");
   }
 );
@@ -38,7 +39,7 @@ userRouter.get("/logout", (req, res) => {
   req.session.email = undefined;
   req.session.age = undefined;
   req.session.role = undefined;
-
+  req.session.userCart = undefined;
   res.redirect("/login");
 });
 
@@ -56,6 +57,8 @@ userRouter.get(
     req.session.email = req.user.email;
     req.session.age = req.user.age;
     req.session.isLogged = true;
+    req.session.role = req.user.role;
+    req.session.userCart = req.user.cart._id;
 
     console.log(res);
     res.redirect("/products");

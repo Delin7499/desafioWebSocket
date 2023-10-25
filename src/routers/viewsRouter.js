@@ -58,13 +58,10 @@ viewsRouter.get(`/realtimecarts`, (req, res) =>
 
 viewsRouter.get("/chat", (req, res) => res.render("chat", {}));
 
-viewsRouter.get("/logear", (req, res) => {
-  if (req.session.isLogged) {
-    res.send("estas logueado");
-  } else {
-    req.session.isLogged = true;
-    res.send("te Acabas de Logear");
-  }
+viewsRouter.get("/mycart", (req, res) => {
+  const cartId = req.session.userCart;
+  console.log(cartId);
+  res.render("cart", { cartId });
 });
 
 export default viewsRouter;

@@ -1,11 +1,8 @@
  {{>header}}
 
     <div class="container">
-        <select id="cartSelect"></select>
-        <button id="cartButton" class="btn btn-primary">Go to Cart</button>
-        <button id="newCartButton" class="btn btn-success">Add Cart</button>
-
-        <h1>Product List</h1>
+        <p data-id="{{session.userCart}}" id="cart">Cart {{session.userCart}}</p>
+    
         <div id="products" class="product-grid">
         </div>
     </div>

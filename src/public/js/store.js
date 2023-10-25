@@ -33,13 +33,14 @@ socket.on("carts", (carts) => {
     }
   });
 });
-
+const cartContainer = document.getElementById("cart");
+const cartId = cartContainer.getAttribute("data-id");
 productosContainer.addEventListener("click", function (event) {
   if (event.target.classList.contains("add-to-cart-button")) {
     const productDiv = event.target.closest(".product");
     const productId = productDiv.id;
 
-    fetch(`/api/carts/${cartSelect.value}/product/${productId}`, {
+    fetch(`/api/carts/${cartId}/product/${productId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -3,6 +3,7 @@ import local from "passport-local";
 import { userModel } from "../dao/models/user.model.js";
 import bcrypt from "bcrypt";
 import GitHubStrategy from "passport-github2";
+import { carritosModel } from "../dao/models/carts.model.js";
 const LocalStrategy = local.Strategy;
 
 const initializePassport = () => {
@@ -12,7 +13,7 @@ const initializePassport = () => {
       { passReqToCallback: true, usernameField: "email" },
       async (req, username, password, done) => {
         const { first_name, last_name, email, age } = req.body;
-        const userExists = await userModel.findOne({ email });
+        const userExists = await userModel.findOne({ email }).lean();
 
         if (userExists) {
           console.log("User already exists. Registration failed.");
@@ -23,12 +24,14 @@ const initializePassport = () => {
           password,
           bcrypt.genSaltSync(10)
         );
+        const carrito = await carritosModel.create({ products: [] });
         const user = await userModel.create({
           first_name,
           last_name,
           email,
           age,
           password: hashedPassword,
+          cart: carrito._id,
         });
         console.log("User registered successfully.");
         return done(null, user);
@@ -48,9 +51,10 @@ const initializePassport = () => {
         try {
           console.log(profile);
           const email = profile.emails[0].value;
-          const user = await userModel.findOne({ email });
+          const user = await userModel.findOne({ email }).lean();
+
           if (!user) {
-            const newUser = userModel.create({
+            const newUser = await userModel.create({
               first_name: profile._json.name,
               last_name: "",
               age: 18,
@@ -72,7 +76,7 @@ const initializePassport = () => {
   });
 
   passport.deserializeUser(async (id, done) => {
-    const user = await userModel.findById(id);
+    const user = await userModel.findById(id).populate("cart").lean();
     done(null, user);
   });
 
@@ -82,7 +86,7 @@ const initializePassport = () => {
       { usernameField: "email" },
       async (username, password, done) => {
         try {
-          const user = await userModel.findOne({ email: username });
+          const user = await userModel.findOne({ email: username }).lean();
           if (!user) {
             console.log("User not found. Login failed.");
             return done(null, false);
@@ -104,4 +108,5 @@ const initializePassport = () => {
   );
 };
 
+10 === "10";
 export default initializePassport;

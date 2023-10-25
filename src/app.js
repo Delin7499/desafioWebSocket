@@ -15,6 +15,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import initializePassport from "./config/passport.config.js";
 import passport from "passport";
+import sessionRouter from "./routers/sessionRouter.js";
 
 const mm = new MessageManager();
 const pm = new ProductManager();
@@ -63,6 +64,7 @@ app.use(express.static(`./src/public`));
 app.use(`/api/products`, productRouter);
 app.use(`/api/carts`, cartsRouter);
 app.use("/api/users", userRouter);
+app.use("/api/session", sessionRouter);
 app.use(`/`, viewsRouter);
 
 socketServer.on(`connection`, async (socket) => {
@@ -73,7 +75,7 @@ socketServer.on(`connection`, async (socket) => {
   socket.emit("carts", await cm.getCarts());
 
   socket.on("cartId", async (cartId) => {
-    const cart = await carritosModel.findOne({ _id: cartId });
+    const cart = await carritosModel.findOne({ _id: cartId }).lean();
     ``;
     console.log(cart);
     socket.emit("cart", cart);
