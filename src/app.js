@@ -31,7 +31,7 @@ app.use(
   session({
     store: MongoStore.create({
       mongoUrl: `mongodb+srv://matimbarcelo:XGl7s3cj2FYYoa64@cluster0.l5ohzsm.mongodb.net/?retryWrites=true&w=majority`,
-      ttl: 100,
+      ttl: 1000000,
     }),
     secret: "coderSectret",
     resave: false,
